@@ -1,0 +1,1783 @@
+<!DOCTYPE html>
+<html lang="id" class="dark scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sixyz Clan Gen 2</title>
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+  <style>
+    /* ===== CUSTOM PROPERTIES ===== */
+    :root {
+      --neon-purple: #a855f7;
+      --neon-cyan: #06b6d4;
+      --neon-pink: #ec4899;
+      --bg-dark: #030712;
+      --bg-card: #0f172a;
+      --bg-card2: #1e1b4b;
+    }
+
+    /* ===== GLOBAL ===== */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: var(--bg-dark);
+      color: #e2e8f0;
+      overflow-x: hidden;
+    }
+
+    /* ===== SCROLLBAR ===== */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #0f172a; }
+    ::-webkit-scrollbar-thumb { background: linear-gradient(to bottom, var(--neon-purple), var(--neon-cyan)); border-radius: 99px; }
+
+    /* ===== ANIMATED BACKGROUND ===== */
+    .animated-bg {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background: radial-gradient(ellipse at 20% 20%, rgba(168,85,247,0.12) 0%, transparent 60%),
+                  radial-gradient(ellipse at 80% 80%, rgba(6,182,212,0.10) 0%, transparent 60%),
+                  radial-gradient(ellipse at 50% 50%, rgba(30,27,75,0.5) 0%, transparent 80%),
+                  #030712;
+      background-size: 200% 200%;
+      animation: bgMove 10s ease-in-out infinite alternate;
+    }
+    @keyframes bgMove {
+      0%   { background-position: 0% 0%; }
+      50%  { background-position: 100% 50%; }
+      100% { background-position: 50% 100%; }
+    }
+
+    /* Floating particles */
+    .particles { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+    .particle {
+      position: absolute;
+      border-radius: 50%;
+      animation: floatParticle linear infinite;
+      opacity: 0.18;
+    }
+    @keyframes floatParticle {
+      0%   { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+      10%  { opacity: 0.18; }
+      90%  { opacity: 0.18; }
+      100% { transform: translateY(-100px) rotate(720deg); opacity: 0; }
+    }
+
+    /* Grid lines */
+    .grid-lines {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background-image:
+        linear-gradient(rgba(168,85,247,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(168,85,247,0.04) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+
+    /* ===== NAVBAR ===== */
+    .navbar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+      background: rgba(3,7,18,0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(168,85,247,0.15);
+      transition: all 0.3s ease;
+    }
+    .navbar.scrolled {
+      background: rgba(3,7,18,0.95);
+      border-bottom-color: rgba(168,85,247,0.3);
+      box-shadow: 0 0 30px rgba(168,85,247,0.1);
+    }
+    .nav-logo {
+      font-size: 1.3rem; font-weight: 900; letter-spacing: 0.05em;
+      background: linear-gradient(135deg, var(--neon-purple), var(--neon-cyan));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-shadow: none;
+      animation: logoPulse 3s ease-in-out infinite;
+    }
+    @keyframes logoPulse {
+      0%, 100% { filter: drop-shadow(0 0 8px rgba(168,85,247,0.6)); }
+      50%       { filter: drop-shadow(0 0 20px rgba(6,182,212,0.8)); }
+    }
+    .nav-link {
+      position: relative; color: #94a3b8; font-size: 0.9rem; font-weight: 500;
+      transition: color 0.3s; padding: 6px 4px; text-decoration: none;
+    }
+    .nav-link::after {
+      content: ''; position: absolute; bottom: -2px; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, var(--neon-purple), var(--neon-cyan));
+      transform: scaleX(0); transition: transform 0.3s ease; border-radius: 99px;
+    }
+    .nav-link:hover { color: #e2e8f0; }
+    .nav-link:hover::after { transform: scaleX(1); }
+    .nav-link.active { color: var(--neon-purple); }
+    .nav-link.active::after { transform: scaleX(1); }
+
+    /* ===== MOBILE MENU ===== */
+    .mobile-menu {
+      position: fixed; inset: 0; z-index: 999;
+      background: rgba(3,7,18,0.98); backdrop-filter: blur(20px);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 2.5rem; transform: translateX(-100%); transition: transform 0.4s cubic-bezier(0.77,0,0.175,1);
+    }
+    .mobile-menu.open { transform: translateX(0); }
+    .mobile-menu .nav-link { font-size: 1.8rem; font-weight: 700; }
+
+    /* ===== BUTTONS ===== */
+    .btn-primary {
+      position: relative; overflow: hidden;
+      background: linear-gradient(135deg, var(--neon-purple), var(--neon-cyan));
+      color: white; font-weight: 700; border: none; cursor: pointer;
+      border-radius: 12px; padding: 14px 36px; font-size: 1rem; letter-spacing: 0.03em;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 0 20px rgba(168,85,247,0.4);
+    }
+    .btn-primary:hover { transform: translateY(-3px) scale(1.04); box-shadow: 0 0 40px rgba(168,85,247,0.7); }
+    .btn-primary:active { transform: scale(0.97); }
+    .btn-secondary {
+      background: transparent; border: 2px solid rgba(168,85,247,0.5);
+      color: var(--neon-purple); font-weight: 700; cursor: pointer;
+      border-radius: 12px; padding: 12px 32px; font-size: 1rem;
+      transition: all 0.3s;
+    }
+    .btn-secondary:hover { background: rgba(168,85,247,0.1); border-color: var(--neon-purple); box-shadow: 0 0 20px rgba(168,85,247,0.3); transform: translateY(-2px); }
+
+    /* Ripple */
+    .ripple-container { position: relative; overflow: hidden; }
+    .ripple {
+      position: absolute; border-radius: 50%;
+      background: rgba(255,255,255,0.25);
+      transform: scale(0); animation: rippleAnim 0.6s linear;
+      pointer-events: none;
+    }
+    @keyframes rippleAnim { to { transform: scale(4); opacity: 0; } }
+
+    /* ===== HERO ===== */
+    .hero-section {
+      min-height: 100vh; display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      position: relative; padding: 120px 20px 80px;
+      text-align: center;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(168,85,247,0.12); border: 1px solid rgba(168,85,247,0.3);
+      border-radius: 99px; padding: 8px 20px; font-size: 0.85rem; color: var(--neon-purple);
+      margin-bottom: 28px; animation: fadeSlideDown 0.8s ease both;
+    }
+    .hero-title {
+      font-size: clamp(2.8rem, 8vw, 6rem); font-weight: 900;
+      line-height: 1.05; letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #fff 0%, var(--neon-purple) 40%, var(--neon-cyan) 80%, #fff 100%);
+      background-size: 300% 300%;
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: gradientShift 4s ease infinite, fadeSlideUp 1s ease 0.2s both;
+    }
+    @keyframes gradientShift {
+      0%   { background-position: 0% 50%; }
+      50%  { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    .hero-subtitle {
+      font-size: clamp(1rem, 2.5vw, 1.25rem); color: #94a3b8; max-width: 600px;
+      margin: 20px auto 40px; line-height: 1.7;
+      animation: fadeSlideUp 1s ease 0.4s both;
+    }
+    .hero-cta { animation: fadeSlideUp 1s ease 0.6s both; display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; }
+
+    /* Floating icons */
+    .floating-icons { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+    .float-icon {
+      position: absolute; font-size: 2.5rem; opacity: 0.08;
+      animation: floatIcon 6s ease-in-out infinite;
+    }
+    @keyframes floatIcon {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      33%       { transform: translateY(-20px) rotate(5deg); }
+      66%       { transform: translateY(10px) rotate(-5deg); }
+    }
+
+    /* Logo game-style */
+    .game-logo {
+      position: relative; display: inline-block;
+      filter: drop-shadow(0 0 30px rgba(168,85,247,0.6));
+      animation: logoGame 2s ease-in-out infinite alternate;
+    }
+    @keyframes logoGame {
+      0%   { filter: drop-shadow(0 0 20px rgba(168,85,247,0.5)) drop-shadow(0 0 40px rgba(6,182,212,0.3)); }
+      100% { filter: drop-shadow(0 0 40px rgba(168,85,247,0.9)) drop-shadow(0 0 80px rgba(6,182,212,0.6)); }
+    }
+
+    /* ===== SECTION ANIMATIONS ===== */
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(40px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeSlideDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; } to { opacity: 1; }
+    }
+    @keyframes scaleIn {
+      from { opacity: 0; transform: scale(0.8); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+
+    .reveal {
+      opacity: 0; transform: translateY(50px); transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-left {
+      opacity: 0; transform: translateX(-50px); transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal-left.visible { opacity: 1; transform: translateX(0); }
+    .reveal-scale {
+      opacity: 0; transform: scale(0.85); transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .reveal-scale.visible { opacity: 1; transform: scale(1); }
+
+    /* Stagger delays */
+    .delay-100 { transition-delay: 0.1s !important; }
+    .delay-200 { transition-delay: 0.2s !important; }
+    .delay-300 { transition-delay: 0.3s !important; }
+    .delay-400 { transition-delay: 0.4s !important; }
+    .delay-500 { transition-delay: 0.5s !important; }
+    .delay-600 { transition-delay: 0.6s !important; }
+
+    /* ===== SECTION STYLES ===== */
+    .section-tag {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(168,85,247,0.1); border: 1px solid rgba(168,85,247,0.25);
+      border-radius: 99px; padding: 6px 16px; font-size: 0.78rem;
+      color: var(--neon-purple); font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+    .section-title {
+      font-size: clamp(1.8rem, 4vw, 3rem); font-weight: 900;
+      line-height: 1.1; letter-spacing: -0.02em;
+    }
+    .gradient-text {
+      background: linear-gradient(135deg, var(--neon-purple), var(--neon-cyan));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* ===== MEMBER CARDS ===== */
+    .member-card {
+      position: relative; border-radius: 20px; overflow: hidden;
+      background: linear-gradient(135deg, rgba(15,23,42,0.9), rgba(30,27,75,0.8));
+      border: 1px solid rgba(168,85,247,0.15);
+      transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.4s ease, border-color 0.4s ease;
+      cursor: pointer;
+    }
+    .member-card:hover {
+      transform: translateY(-12px) scale(1.03);
+      box-shadow: 0 20px 60px rgba(168,85,247,0.35), 0 0 0 1px rgba(168,85,247,0.4);
+      border-color: rgba(168,85,247,0.5);
+    }
+    .member-card-bg {
+      width: 100%; height: 130px; object-fit: cover;
+      background: linear-gradient(135deg, #1e1b4b, #0c4a6e);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 3rem; position: relative; overflow: hidden;
+    }
+    .member-card-bg img { width: 100%; height: 100%; object-fit: cover; }
+    .member-card-bg .bg-placeholder {
+      width: 100%; height: 100%;
+      background: linear-gradient(135deg, #1e1b4b 0%, #0c4a6e 50%, #1e1b4b 100%);
+      background-size: 200% 200%;
+      animation: bgMove 4s ease infinite alternate;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .member-pfp-wrap {
+      position: relative; margin: -40px auto 0; width: 80px; height: 80px;
+      z-index: 2; display: flex; align-items: center; justify-content: center;
+    }
+    .member-pfp-ring {
+      position: absolute; inset: -4px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--neon-purple), var(--neon-cyan));
+      animation: ringRotate 3s linear infinite;
+    }
+    @keyframes ringRotate { to { transform: rotate(360deg); } }
+    .member-pfp {
+      width: 80px; height: 80px; border-radius: 50%; object-fit: cover;
+      border: 3px solid var(--bg-dark); position: relative; z-index: 1;
+      background: linear-gradient(135deg, #312e81, #0c4a6e);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.8rem; font-weight: 800; color: white;
+      overflow: hidden;
+    }
+    .member-pfp img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+    .member-info { padding: 16px 20px 24px; text-align: center; }
+    .member-name { font-size: 1.1rem; font-weight: 800; color: #f1f5f9; margin-bottom: 4px; }
+    .member-role-badge {
+      display: inline-block; padding: 3px 12px; border-radius: 99px; font-size: 0.7rem; font-weight: 700;
+      background: rgba(168,85,247,0.15); border: 1px solid rgba(168,85,247,0.3);
+      color: var(--neon-purple); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.06em;
+    }
+    .member-desc { font-size: 0.82rem; color: #64748b; line-height: 1.6; }
+
+    /* ===== RULES SECTION ===== */
+    .rules-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px;
+    }
+    .rule-item {
+      display: flex; align-items: flex-start; gap: 14px;
+      background: rgba(15,23,42,0.7); border: 1px solid rgba(168,85,247,0.1);
+      border-radius: 14px; padding: 16px 18px;
+      transition: border-color 0.3s, box-shadow 0.3s, transform 0.3s;
+      opacity: 0; transform: translateX(-20px);
+    }
+    .rule-item.rule-visible {
+      opacity: 1; transform: translateX(0);
+      transition: opacity 0.5s ease, transform 0.5s ease, border-color 0.3s, box-shadow 0.3s;
+    }
+    .rule-item:hover {
+      border-color: rgba(168,85,247,0.4); box-shadow: 0 0 20px rgba(168,85,247,0.1);
+      transform: translateX(6px);
+    }
+    .rule-number {
+      min-width: 32px; height: 32px; border-radius: 8px;
+      background: linear-gradient(135deg, var(--neon-purple), var(--neon-cyan));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.75rem; font-weight: 800; color: white;
+    }
+    .rule-text { font-size: 0.88rem; color: #94a3b8; line-height: 1.5; padding-top: 6px; }
+
+    /* Role cards */
+    .role-card {
+      background: rgba(15,23,42,0.8); border: 1px solid rgba(168,85,247,0.15);
+      border-radius: 16px; padding: 20px 24px;
+      transition: all 0.3s;
+    }
+    .role-card:hover { border-color: rgba(168,85,247,0.4); box-shadow: 0 0 30px rgba(168,85,247,0.15); transform: translateY(-4px); }
+    .role-title { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 10px; }
+    .role-names { display: flex; flex-wrap: wrap; gap: 8px; }
+    .role-name-tag {
+      padding: 5px 14px; border-radius: 99px; font-size: 0.82rem; font-weight: 600;
+      background: rgba(168,85,247,0.12); border: 1px solid rgba(168,85,247,0.25);
+      color: #c4b5fd;
+    }
+
+    /* ===== TYPING EFFECT ===== */
+    .typing-cursor::after {
+      content: '|'; animation: blink 0.8s step-end infinite; margin-left: 2px; color: var(--neon-purple);
+    }
+    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+    /* ===== MODAL ===== */
+    .modal-overlay {
+      position: fixed; inset: 0; z-index: 2000;
+      background: rgba(0,0,0,0.85); backdrop-filter: blur(10px);
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px; opacity: 0; pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+    .modal-box {
+      background: #0f172a; border: 1px solid rgba(168,85,247,0.3);
+      border-radius: 24px; padding: 36px; width: 100%; max-width: 480px;
+      box-shadow: 0 0 80px rgba(168,85,247,0.2);
+      transform: scale(0.8) translateY(30px); transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+      max-height: 90vh; overflow-y: auto;
+    }
+    .modal-overlay.open .modal-box { transform: scale(1) translateY(0); }
+    .modal-title { font-size: 1.5rem; font-weight: 800; margin-bottom: 8px; }
+    .modal-input {
+      width: 100%; background: rgba(30,27,75,0.5); border: 1px solid rgba(168,85,247,0.2);
+      border-radius: 10px; padding: 12px 16px; color: #e2e8f0; font-size: 0.9rem;
+      outline: none; transition: border-color 0.3s, box-shadow 0.3s;
+      margin-bottom: 14px;
+    }
+    .modal-input:focus { border-color: var(--neon-purple); box-shadow: 0 0 0 3px rgba(168,85,247,0.15); }
+    .modal-label { font-size: 0.8rem; color: #64748b; margin-bottom: 6px; display: block; font-weight: 600; letter-spacing: 0.03em; }
+    .error-shake {
+      animation: shake 0.4s ease;
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-10px); }
+      40% { transform: translateX(10px); }
+      60% { transform: translateX(-6px); }
+      80% { transform: translateX(6px); }
+    }
+
+    /* ===== ADMIN PANEL ===== */
+    .admin-tab {
+      padding: 10px 20px; border-radius: 10px; font-size: 0.85rem; font-weight: 700;
+      cursor: pointer; transition: all 0.25s; border: 1px solid transparent; color: #64748b;
+    }
+    .admin-tab.active {
+      background: linear-gradient(135deg, rgba(168,85,247,0.2), rgba(6,182,212,0.1));
+      border-color: rgba(168,85,247,0.4); color: var(--neon-purple);
+    }
+    .admin-tab:hover:not(.active) { background: rgba(168,85,247,0.05); color: #94a3b8; }
+    .admin-panel-section { display: none; }
+    .admin-panel-section.active { display: block; }
+
+    /* Member edit cards in admin */
+    .admin-member-card {
+      background: rgba(15,23,42,0.8); border: 1px solid rgba(168,85,247,0.1);
+      border-radius: 14px; padding: 16px; display: flex; align-items: center; gap: 14px;
+      transition: border-color 0.3s;
+    }
+    .admin-member-card:hover { border-color: rgba(168,85,247,0.3); }
+
+    /* ===== IMAGE UPLOAD ===== */
+    .img-upload-area {
+      border: 2px dashed rgba(168,85,247,0.3); border-radius: 12px;
+      padding: 20px; text-align: center; cursor: pointer;
+      transition: border-color 0.3s, background 0.3s; margin-bottom: 14px;
+    }
+    .img-upload-area:hover { border-color: var(--neon-purple); background: rgba(168,85,247,0.05); }
+
+    /* ===== NOTIFICATION ===== */
+    .notification {
+      position: fixed; bottom: 24px; right: 24px; z-index: 9999;
+      background: rgba(15,23,42,0.95); border: 1px solid rgba(168,85,247,0.4);
+      border-radius: 14px; padding: 14px 22px; color: #e2e8f0; font-size: 0.9rem;
+      display: flex; align-items: center; gap: 10px;
+      transform: translateX(200%); transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
+      box-shadow: 0 0 40px rgba(168,85,247,0.2);
+      max-width: 320px;
+    }
+    .notification.show { transform: translateX(0); }
+    .notification.success { border-color: rgba(34,197,94,0.5); }
+    .notification.error { border-color: rgba(239,68,68,0.5); }
+
+    /* ===== LAYOUT TOGGLE ===== */
+    .layout-toggle-btn {
+      background: rgba(168,85,247,0.1); border: 1px solid rgba(168,85,247,0.3);
+      border-radius: 10px; padding: 8px 16px; color: var(--neon-purple);
+      font-size: 0.8rem; font-weight: 700; cursor: pointer; transition: all 0.3s;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .layout-toggle-btn:hover { background: rgba(168,85,247,0.2); }
+    .layout-toggle-btn.active-layout {
+      background: linear-gradient(135deg, rgba(168,85,247,0.3), rgba(6,182,212,0.2));
+      border-color: var(--neon-purple);
+    }
+
+    /* Grid layouts for members */
+    #members-grid.mobile-layout {
+      grid-template-columns: 1fr !important;
+    }
+    #members-grid.desktop-layout {
+      grid-template-columns: repeat(4, 1fr) !important;
+    }
+
+    /* ===== FOOTER ===== */
+    .footer {
+      border-top: 1px solid rgba(168,85,247,0.15);
+      background: rgba(3,7,18,0.9);
+      padding: 48px 24px 24px;
+    }
+    .footer-glow {
+      position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+      width: 400px; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--neon-purple), var(--neon-cyan), transparent);
+    }
+
+    /* ===== STATS ===== */
+    .stat-card {
+      background: rgba(15,23,42,0.7); border: 1px solid rgba(168,85,247,0.1);
+      border-radius: 16px; padding: 24px; text-align: center;
+      transition: all 0.3s;
+    }
+    .stat-card:hover { border-color: rgba(168,85,247,0.4); transform: translateY(-4px); box-shadow: 0 0 30px rgba(168,85,247,0.15); }
+    .stat-number {
+      font-size: 2.5rem; font-weight: 900;
+      background: linear-gradient(135deg, var(--neon-purple), var(--neon-cyan));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 768px) {
+      .desktop-nav { display: none; }
+      .mobile-hamburger { display: flex; }
+      #members-grid { grid-template-columns: repeat(2, 1fr) !important; }
+    }
+    @media (min-width: 769px) {
+      .mobile-hamburger { display: none; }
+    }
+
+    /* ===== GLOW DIVIDER ===== */
+    .glow-divider {
+      height: 1px; margin: 0;
+      background: linear-gradient(90deg, transparent 0%, var(--neon-purple) 30%, var(--neon-cyan) 70%, transparent 100%);
+      opacity: 0.3;
+    }
+
+    /* ===== SCROLL TOP ===== */
+    .scroll-top {
+      position: fixed; bottom: 24px; left: 24px; z-index: 999;
+      width: 44px; height: 44px; border-radius: 12px;
+      background: linear-gradient(135deg, var(--neon-purple), var(--neon-cyan));
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; opacity: 0; transition: opacity 0.3s, transform 0.3s;
+      transform: translateY(20px); box-shadow: 0 0 20px rgba(168,85,247,0.4);
+      border: none;
+    }
+    .scroll-top.visible { opacity: 1; transform: translateY(0); }
+    .scroll-top:hover { transform: translateY(-4px); box-shadow: 0 0 30px rgba(168,85,247,0.7); }
+
+    /* ===== SELECT STYLE ===== */
+    select.modal-input {
+      background: rgba(30,27,75,0.5); cursor: pointer;
+    }
+    select.modal-input option { background: #0f172a; color: #e2e8f0; }
+
+    /* ===== TEXTAREA ===== */
+    textarea.modal-input { resize: vertical; min-height: 80px; }
+
+    /* hidden file input */
+    input[type="file"] { display: none; }
+
+    /* ===== CLAN INFO EDITOR ===== */
+    .info-edit-area {
+      width: 100%; background: rgba(30,27,75,0.5); border: 1px solid rgba(168,85,247,0.2);
+      border-radius: 10px; padding: 12px 16px; color: #e2e8f0; font-size: 0.85rem;
+      outline: none; resize: vertical; min-height: 200px; font-family: inherit; line-height: 1.6;
+      transition: border-color 0.3s;
+    }
+    .info-edit-area:focus { border-color: var(--neon-purple); box-shadow: 0 0 0 3px rgba(168,85,247,0.15); }
+
+    /* Clan info display */
+    #clan-info-display p { margin-bottom: 8px; color: #94a3b8; font-size: 0.88rem; line-height: 1.6; }
+
+    /* progress bar */
+    .neon-progress { height: 3px; background: rgba(168,85,247,0.1); border-radius: 99px; overflow: hidden; margin-top: 8px; }
+    .neon-progress-bar { height: 100%; background: linear-gradient(90deg, var(--neon-purple), var(--neon-cyan)); border-radius: 99px; width: 0; transition: width 1.2s ease; }
+
+    /* ===== HERO SCROLL INDICATOR ===== */
+    .scroll-indicator {
+      position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
+      color: #475569; font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase;
+      animation: scrollBounce 2s ease-in-out infinite;
+    }
+    @keyframes scrollBounce {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50%       { transform: translateX(-50%) translateY(8px); }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ===== ANIMATED BACKGROUND ===== -->
+<div class="animated-bg"></div>
+<div class="grid-lines"></div>
+<div class="particles" id="particles-container"></div>
+
+<!-- ===== NAVBAR ===== -->
+<nav class="navbar" id="navbar">
+  <div style="max-width:1200px;margin:0 auto;padding:0 24px;height:64px;display:flex;align-items:center;justify-content:space-between;">
+    <!-- Logo -->
+    <a href="#beranda" class="nav-logo game-logo" style="text-decoration:none;">
+      ⚔️ SIXYZ
+    </a>
+    <!-- Desktop Nav -->
+    <div class="desktop-nav" style="display:flex;align-items:center;gap:32px;">
+      <a href="#beranda" class="nav-link active">Beranda</a>
+      <a href="#member" class="nav-link">Member</a>
+      <a href="#clan" class="nav-link">Clan</a>
+      <a href="#admin-section" class="nav-link">Admin</a>
+    </div>
+    <!-- Right Actions -->
+    <div style="display:flex;align-items:center;gap:12px;">
+      <button onclick="openAdminLogin()" class="btn-primary ripple-container" style="padding:10px 20px;font-size:0.85rem;border-radius:10px;">
+        <span style="display:flex;align-items:center;gap:6px;">
+          <i data-lucide="shield" style="width:15px;height:15px;"></i> Admin
+        </span>
+      </button>
+      <!-- Hamburger -->
+      <button class="mobile-hamburger" onclick="toggleMobileMenu()" style="background:none;border:none;color:#94a3b8;cursor:pointer;padding:8px;display:flex;flex-direction:column;gap:5px;align-items:center;justify-content:center;">
+        <span id="ham1" style="width:22px;height:2px;background:currentColor;display:block;transition:all 0.3s;border-radius:2px;"></span>
+        <span id="ham2" style="width:22px;height:2px;background:currentColor;display:block;transition:all 0.3s;border-radius:2px;"></span>
+        <span id="ham3" style="width:22px;height:2px;background:currentColor;display:block;transition:all 0.3s;border-radius:2px;"></span>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- ===== MOBILE MENU ===== -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#beranda" class="nav-link" onclick="toggleMobileMenu()">Beranda</a>
+  <a href="#member" class="nav-link" onclick="toggleMobileMenu()">Member</a>
+  <a href="#clan" class="nav-link" onclick="toggleMobileMenu()">Clan</a>
+  <a href="#admin-section" class="nav-link" onclick="toggleMobileMenu()">Admin</a>
+</div>
+
+<!-- ===== HERO SECTION ===== -->
+<section class="hero-section" id="beranda">
+  <!-- Floating icons -->
+  <div class="floating-icons">
+    <div class="float-icon" style="left:8%;top:20%;animation-delay:0s;animation-duration:7s;">🖥️</div>
+    <div class="float-icon" style="right:8%;top:25%;animation-delay:1s;animation-duration:6s;">📱</div>
+    <div class="float-icon" style="left:15%;bottom:25%;animation-delay:2s;animation-duration:8s;">🎮</div>
+    <div class="float-icon" style="right:15%;bottom:20%;animation-delay:0.5s;animation-duration:5s;">⚔️</div>
+    <div class="float-icon" style="left:45%;top:15%;animation-delay:1.5s;animation-duration:9s;font-size:1.5rem;">✨</div>
+    <div class="float-icon" style="right:25%;top:60%;animation-delay:3s;animation-duration:7s;font-size:1.5rem;">🔮</div>
+    <div class="float-icon" style="left:25%;top:55%;animation-delay:2.5s;animation-duration:6s;font-size:1.5rem;">⚡</div>
+  </div>
+
+  <div style="position:relative;z-index:1;max-width:800px;">
+    <!-- Badge -->
+    <div class="hero-badge">
+      <span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--neon-purple);animation:blink 1.2s ease infinite;"></span>
+      Gen 2 • Active Clan 🔥
+    </div>
+
+    <!-- Title -->
+    <h1 class="hero-title game-logo">
+      SIXYZ CLAN
+    </h1>
+    <div style="animation:fadeSlideUp 1s ease 0.3s both;">
+      <span style="display:block;font-size:clamp(1.2rem,3vw,2rem);font-weight:700;color:var(--neon-cyan);letter-spacing:0.15em;margin-top:6px;">GEN 2</span>
+    </div>
+
+    <!-- Subtitle typing -->
+    <p class="hero-subtitle" id="hero-typing-text"></p>
+
+    <!-- CTA -->
+    <div class="hero-cta">
+      <button onclick="document.querySelector('#member').scrollIntoView({behavior:'smooth'})" class="btn-primary ripple-container">
+        <span style="display:flex;align-items:center;gap:8px;">
+          <i data-lucide="users" style="width:16px;height:16px;"></i> Lihat Member
+        </span>
+      </button>
+      <button onclick="document.querySelector('#clan').scrollIntoView({behavior:'smooth'})" class="btn-secondary">
+        <span style="display:flex;align-items:center;gap:8px;">
+          <i data-lucide="scroll-text" style="width:16px;height:16px;"></i> Rules Clan
+        </span>
+      </button>
+    </div>
+
+    <!-- Stats -->
+    <div style="display:flex;gap:40px;justify-content:center;margin-top:56px;flex-wrap:wrap;animation:fadeSlideUp 1s ease 0.9s both;">
+      <div style="text-align:center;">
+        <div class="stat-number" id="stat-members">0</div>
+        <div style="font-size:0.78rem;color:#475569;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;">Members</div>
+      </div>
+      <div style="text-align:center;border-left:1px solid rgba(168,85,247,0.2);padding-left:40px;">
+        <div class="stat-number">2</div>
+        <div style="font-size:0.78rem;color:#475569;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;">Owners</div>
+      </div>
+      <div style="text-align:center;border-left:1px solid rgba(168,85,247,0.2);padding-left:40px;">
+        <div class="stat-number">2</div>
+        <div style="font-size:0.78rem;color:#475569;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;">Admins</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scroll indicator -->
+  <div class="scroll-indicator">
+    <i data-lucide="chevrons-down" style="width:20px;height:20px;"></i>
+    <span>Scroll</span>
+  </div>
+</section>
+
+<div class="glow-divider"></div>
+
+<!-- ===== MEMBER SECTION ===== -->
+<section id="member" style="padding:100px 24px;position:relative;z-index:1;">
+  <div style="max-width:1200px;margin:0 auto;">
+
+    <!-- Header -->
+    <div style="text-align:center;margin-bottom:60px;">
+      <div class="section-tag reveal">
+        <i data-lucide="users" style="width:13px;height:13px;"></i> MEMBER LIST
+      </div>
+      <h2 class="section-title reveal delay-100">
+        Anggota <span class="gradient-text">Sixyz Clan</span>
+      </h2>
+      <p style="color:#64748b;margin-top:12px;font-size:0.95rem;max-width:500px;margin-left:auto;margin-right:auto;" class="reveal delay-200">
+        Kenalan sama squad Gen 2 yang solid dan keren abis! 🔥
+      </p>
+    </div>
+
+    <!-- Layout Toggle -->
+    <div style="display:flex;justify-content:flex-end;margin-bottom:24px;gap:8px;align-items:center;" class="reveal">
+      <span style="font-size:0.78rem;color:#475569;font-weight:600;">Layout:</span>
+      <button class="layout-toggle-btn active-layout" id="btn-desktop" onclick="setLayout('desktop')">
+        <i data-lucide="layout-grid" style="width:14px;height:14px;"></i> Desktop
+      </button>
+      <button class="layout-toggle-btn" id="btn-mobile" onclick="setLayout('mobile')">
+        <i data-lucide="smartphone" style="width:14px;height:14px;"></i> Mobile
+      </button>
+    </div>
+
+    <!-- Members Grid -->
+    <div id="members-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:24px;">
+      <!-- Cards rendered by JS -->
+    </div>
+
+    <!-- Empty state -->
+    <div id="members-empty" style="display:none;text-align:center;padding:80px 20px;color:#475569;">
+      <div style="font-size:4rem;margin-bottom:16px;">👥</div>
+      <p style="font-size:1.1rem;font-weight:600;">Belum ada member.</p>
+      <p style="font-size:0.85rem;margin-top:8px;">Login sebagai admin untuk menambah member.</p>
+    </div>
+  </div>
+</section>
+
+<div class="glow-divider"></div>
+
+<!-- ===== CLAN / RULES SECTION ===== -->
+<section id="clan" style="padding:100px 24px;position:relative;z-index:1;">
+  <div style="max-width:1100px;margin:0 auto;">
+
+    <!-- Header -->
+    <div style="text-align:center;margin-bottom:60px;">
+      <div class="section-tag reveal">
+        <i data-lucide="scroll-text" style="width:13px;height:13px;"></i> TENTANG CLAN
+      </div>
+      <h2 class="section-title reveal delay-100">
+        Rules & <span class="gradient-text">Info Clan</span>
+      </h2>
+      <p style="color:#64748b;margin-top:12px;font-size:0.95rem;" class="reveal delay-200">
+        Baca dan patuhi rules berikut untuk jaga keharmonisan clan 🛡️
+      </p>
+    </div>
+
+    <!-- Clan Info (editable) -->
+    <div class="reveal" style="margin-bottom:56px;">
+      <div style="background:rgba(15,23,42,0.7);border:1px solid rgba(168,85,247,0.15);border-radius:20px;padding:28px 32px;">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
+          <div style="width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,var(--neon-purple),var(--neon-cyan));display:flex;align-items:center;justify-content:center;">
+            <i data-lucide="info" style="width:18px;height:18px;color:white;"></i>
+          </div>
+          <div>
+            <div style="font-size:0.75rem;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;">Info Clan</div>
+            <div style="font-size:1.1rem;font-weight:800;color:#f1f5f9;">Sixyz Clan Gen 2</div>
+          </div>
+        </div>
+        <div id="clan-info-display"></div>
+      </div>
+    </div>
+
+    <!-- Rules Grid -->
+    <h3 style="font-size:1.3rem;font-weight:800;margin-bottom:24px;color:#f1f5f9;" class="reveal">
+      📋 Rules Clan
+    </h3>
+    <div class="rules-grid" id="rules-container">
+      <!-- Rules rendered by JS -->
+    </div>
+
+    <!-- Roles -->
+    <div style="margin-top:60px;">
+      <h3 style="font-size:1.3rem;font-weight:800;margin-bottom:28px;color:#f1f5f9;" class="reveal">
+        👑 Role & Struktur
+      </h3>
+      <div id="roles-container" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;">
+        <!-- Roles rendered by JS -->
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="glow-divider"></div>
+
+<!-- ===== ADMIN SECTION ===== -->
+<section id="admin-section" style="padding:100px 24px;position:relative;z-index:1;">
+  <div style="max-width:1100px;margin:0 auto;">
+
+    <!-- Header -->
+    <div style="text-align:center;margin-bottom:60px;">
+      <div class="section-tag reveal">
+        <i data-lucide="shield" style="width:13px;height:13px;"></i> ADMIN PANEL
+      </div>
+      <h2 class="section-title reveal delay-100">
+        Panel <span class="gradient-text">Kontrol</span>
+      </h2>
+      <p style="color:#64748b;margin-top:12px;font-size:0.95rem;" class="reveal delay-200">
+        Akses penuh untuk manage clan. Login dulu bos! 🔐
+      </p>
+    </div>
+
+    <!-- Admin locked state -->
+    <div id="admin-locked" style="text-align:center;padding:60px 20px;" class="reveal">
+      <div style="font-size:5rem;margin-bottom:20px;filter:drop-shadow(0 0 20px rgba(168,85,247,0.4));animation:logoGame 2s ease-in-out infinite alternate;">🔐</div>
+      <h3 style="font-size:1.4rem;font-weight:800;margin-bottom:12px;">Panel Terkunci</h3>
+      <p style="color:#64748b;margin-bottom:28px;font-size:0.9rem;">Login terlebih dahulu untuk mengakses admin panel.</p>
+      <button onclick="openAdminLogin()" class="btn-primary ripple-container" style="display:inline-flex;align-items:center;gap:8px;">
+        <i data-lucide="log-in" style="width:16px;height:16px;"></i> Login Admin
+      </button>
+    </div>
+
+    <!-- Admin panel (shown after login) -->
+    <div id="admin-panel" style="display:none;">
+      <!-- Tabs -->
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:32px;background:rgba(15,23,42,0.6);border:1px solid rgba(168,85,247,0.1);border-radius:16px;padding:8px;">
+        <button class="admin-tab active" onclick="switchAdminTab('add-member')">
+          <span style="display:flex;align-items:center;gap:6px;"><i data-lucide="user-plus" style="width:14px;height:14px;"></i> Tambah Member</span>
+        </button>
+        <button class="admin-tab" onclick="switchAdminTab('manage-members')">
+          <span style="display:flex;align-items:center;gap:6px;"><i data-lucide="users" style="width:14px;height:14px;"></i> Kelola Member</span>
+        </button>
+        <button class="admin-tab" onclick="switchAdminTab('edit-clan')">
+          <span style="display:flex;align-items:center;gap:6px;"><i data-lucide="edit" style="width:14px;height:14px;"></i> Edit Info Clan</span>
+        </button>
+        <button class="admin-tab" onclick="switchAdminTab('edit-roles')">
+          <span style="display:flex;align-items:center;gap:6px;"><i data-lucide="crown" style="width:14px;height:14px;"></i> Edit Roles</span>
+        </button>
+        <div style="flex:1;"></div>
+        <button onclick="logoutAdmin()" style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);border-radius:10px;padding:8px 16px;color:#f87171;font-size:0.82rem;font-weight:700;cursor:pointer;transition:all 0.3s;display:flex;align-items:center;gap:6px;" onmouseover="this.style.background='rgba(239,68,68,0.2)'" onmouseout="this.style.background='rgba(239,68,68,0.1)'">
+          <i data-lucide="log-out" style="width:14px;height:14px;"></i> Logout
+        </button>
+      </div>
+
+      <!-- TAB: Add Member -->
+      <div class="admin-panel-section active" id="tab-add-member">
+        <div style="background:rgba(15,23,42,0.7);border:1px solid rgba(168,85,247,0.15);border-radius:20px;padding:32px;">
+          <h3 style="font-size:1.2rem;font-weight:800;margin-bottom:24px;display:flex;align-items:center;gap:10px;">
+            <i data-lucide="user-plus" style="width:20px;height:20px;color:var(--neon-purple);"></i> Tambah Member Baru
+          </h3>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+            <div>
+              <label class="modal-label">Nama Member *</label>
+              <input type="text" id="add-name" class="modal-input" placeholder="Contoh: Zikk" />
+              <label class="modal-label">Role</label>
+              <select id="add-role" class="modal-input">
+                <option value="member">Member</option>
+                <option value="owner">Owner</option>
+                <option value="co-owner">Co-Owner</option>
+                <option value="admin">Admin</option>
+                <option value="editor">Editor</option>
+                <option value="cameramen">Cameramen</option>
+              </select>
+              <label class="modal-label">Deskripsi</label>
+              <textarea id="add-desc" class="modal-input" placeholder="Deskripsi singkat member..." style="min-height:80px;resize:vertical;"></textarea>
+            </div>
+            <div>
+              <label class="modal-label">Profile Picture (PFP)</label>
+              <div class="img-upload-area" onclick="document.getElementById('add-pfp-input').click()">
+                <div id="add-pfp-preview" style="display:flex;flex-direction:column;align-items:center;gap:8px;color:#64748b;">
+                  <i data-lucide="image" style="width:32px;height:32px;opacity:0.5;"></i>
+                  <span style="font-size:0.8rem;">Klik untuk upload PFP</span>
+                </div>
+              </div>
+              <input type="file" id="add-pfp-input" accept="image/*" onchange="previewImage(this,'add-pfp-preview','add-pfp-data')" />
+              <input type="hidden" id="add-pfp-data" />
+
+              <label class="modal-label">Background Image</label>
+              <div class="img-upload-area" onclick="document.getElementById('add-bg-input').click()">
+                <div id="add-bg-preview" style="display:flex;flex-direction:column;align-items:center;gap:8px;color:#64748b;">
+                  <i data-lucide="image-plus" style="width:32px;height:32px;opacity:0.5;"></i>
+                  <span style="font-size:0.8rem;">Klik untuk upload Background</span>
+                </div>
+              </div>
+              <input type="file" id="add-bg-input" accept="image/*" onchange="previewImage(this,'add-bg-preview','add-bg-data')" />
+              <input type="hidden" id="add-bg-data" />
+            </div>
+          </div>
+          <button onclick="addMember()" class="btn-primary ripple-container" style="margin-top:20px;display:flex;align-items:center;gap:8px;">
+            <i data-lucide="plus-circle" style="width:16px;height:16px;"></i> Tambah Member
+          </button>
+        </div>
+      </div>
+
+      <!-- TAB: Manage Members -->
+      <div class="admin-panel-section" id="tab-manage-members">
+        <div style="background:rgba(15,23,42,0.7);border:1px solid rgba(168,85,247,0.15);border-radius:20px;padding:32px;">
+          <h3 style="font-size:1.2rem;font-weight:800;margin-bottom:24px;display:flex;align-items:center;gap:10px;">
+            <i data-lucide="users" style="width:20px;height:20px;color:var(--neon-purple);"></i> Kelola Member
+          </h3>
+          <div id="admin-members-list" style="display:flex;flex-direction:column;gap:12px;">
+            <!-- Rendered by JS -->
+          </div>
+          <div id="admin-members-empty" style="text-align:center;padding:40px;color:#475569;display:none;">
+            <i data-lucide="users" style="width:40px;height:40px;opacity:0.3;margin-bottom:12px;"></i>
+            <p>Belum ada member. Tambahkan dulu!</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB: Edit Clan Info -->
+      <div class="admin-panel-section" id="tab-edit-clan">
+        <div style="background:rgba(15,23,42,0.7);border:1px solid rgba(168,85,247,0.15);border-radius:20px;padding:32px;">
+          <h3 style="font-size:1.2rem;font-weight:800;margin-bottom:24px;display:flex;align-items:center;gap:10px;">
+            <i data-lucide="edit" style="width:20px;height:20px;color:var(--neon-purple);"></i> Edit Info Clan
+          </h3>
+          <label class="modal-label">Info Clan (satu baris = satu info)</label>
+          <textarea id="clan-info-editor" class="info-edit-area" placeholder="Masukkan info clan..."></textarea>
+          <button onclick="saveClanInfo()" class="btn-primary ripple-container" style="margin-top:16px;display:flex;align-items:center;gap:8px;">
+            <i data-lucide="save" style="width:16px;height:16px;"></i> Simpan Info
+          </button>
+        </div>
+      </div>
+
+      <!-- TAB: Edit Roles -->
+      <div class="admin-panel-section" id="tab-edit-roles">
+        <div style="background:rgba(15,23,42,0.7);border:1px solid rgba(168,85,247,0.15);border-radius:20px;padding:32px;">
+          <h3 style="font-size:1.2rem;font-weight:800;margin-bottom:24px;display:flex;align-items:center;gap:10px;">
+            <i data-lucide="crown" style="width:20px;height:20px;color:var(--neon-purple);"></i> Edit Role List
+          </h3>
+          <p style="font-size:0.82rem;color:#64748b;margin-bottom:20px;">Format: <code style="background:rgba(168,85,247,0.1);padding:2px 8px;border-radius:6px;color:var(--neon-purple);">RoleName: member1, member2</code> (satu baris = satu role)</p>
+          <textarea id="roles-editor" class="info-edit-area" placeholder="owner: zikk, nazar&#10;co-owner: ardi&#10;admin: maymay, ren"></textarea>
+          <button onclick="saveRoles()" class="btn-primary ripple-container" style="margin-top:16px;display:flex;align-items:center;gap:8px;">
+            <i data-lucide="save" style="width:16px;height:16px;"></i> Simpan Roles
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer class="footer" style="position:relative;z-index:1;">
+  <div style="max-width:1100px;margin:0 auto;">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:40px;margin-bottom:40px;">
+      <div>
+        <div class="nav-logo" style="font-size:1.6rem;margin-bottom:16px;display:inline-block;">⚔️ SIXYZ</div>
+        <p style="color:#475569;font-size:0.85rem;line-height:1.7;max-width:240px;">Clan solid dengan vibes yang keren. Gabung dan rasain serunya bareng Gen 2!</p>
+        <div style="display:flex;gap:12px;margin-top:20px;">
+          <div style="width:36px;height:36px;border-radius:10px;background:rgba(168,85,247,0.1);border:1px solid rgba(168,85,247,0.2);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.3s;" onmouseover="this.style.background='rgba(168,85,247,0.2)'" onmouseout="this.style.background='rgba(168,85,247,0.1)'">
+            🎮
+          </div>
+          <div style="width:36px;height:36px;border-radius:10px;background:rgba(6,182,212,0.1);border:1px solid rgba(6,182,212,0.2);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.3s;" onmouseover="this.style.background='rgba(6,182,212,0.2)'" onmouseout="this.style.background='rgba(6,182,212,0.1)'">
+            📱
+          </div>
+          <div style="width:36px;height:36px;border-radius:10px;background:rgba(236,72,153,0.1);border:1px solid rgba(236,72,153,0.2);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.3s;" onmouseover="this.style.background='rgba(236,72,153,0.2)'" onmouseout="this.style.background='rgba(236,72,153,0.1)'">
+            🖥️
+          </div>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:0.8rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#475569;margin-bottom:16px;">Navigasi</div>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <a href="#beranda" style="color:#64748b;text-decoration:none;font-size:0.88rem;transition:color 0.3s;" onmouseover="this.style.color='#a855f7'" onmouseout="this.style.color='#64748b'">Beranda</a>
+          <a href="#member" style="color:#64748b;text-decoration:none;font-size:0.88rem;transition:color 0.3s;" onmouseover="this.style.color='#a855f7'" onmouseout="this.style.color='#64748b'">Member</a>
+          <a href="#clan" style="color:#64748b;text-decoration:none;font-size:0.88rem;transition:color 0.3s;" onmouseover="this.style.color='#a855f7'" onmouseout="this.style.color='#64748b'">Clan & Rules</a>
+          <a href="#admin-section" style="color:#64748b;text-decoration:none;font-size:0.88rem;transition:color 0.3s;" onmouseover="this.style.color='#a855f7'" onmouseout="this.style.color='#64748b'">Admin Panel</a>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:0.8rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#475569;margin-bottom:16px;">Jam Aktif</div>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;align-items:center;gap:8px;font-size:0.88rem;color:#64748b;">
+            <i data-lucide="sun" style="width:14px;height:14px;color:var(--neon-cyan);"></i> Buka: 05.00 WIB
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;font-size:0.88rem;color:#64748b;">
+            <i data-lucide="moon" style="width:14px;height:14px;color:var(--neon-purple);"></i> Tutup: 00.00 WIB
+          </div>
+          <div style="margin-top:8px;background:rgba(168,85,247,0.08);border:1px solid rgba(168,85,247,0.15);border-radius:10px;padding:10px 14px;">
+            <div style="font-size:0.75rem;color:#64748b;font-weight:600;">Status GC</div>
+            <div style="display:flex;align-items:center;gap:6px;margin-top:4px;">
+              <span id="gc-status-dot" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#22c55e;animation:blink 1.5s ease infinite;"></span>
+              <span id="gc-status-text" style="color:#22c55e;font-size:0.85rem;font-weight:700;">Active</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="border-top:1px solid rgba(168,85,247,0.1);padding-top:24px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
+      <p style="color:#374151;font-size:0.8rem;">© 2025 Sixyz Clan Gen 2. All rights reserved.</p>
+      <p style="color:#374151;font-size:0.8rem;">Made with 💜 by clan</p>
+    </div>
+  </div>
+  <div class="footer-glow"></div>
+</footer>
+
+<!-- ===== SCROLL TOP ===== -->
+<button class="scroll-top" id="scrollTopBtn" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+  <i data-lucide="arrow-up" style="width:18px;height:18px;color:white;"></i>
+</button>
+
+<!-- ===== ADMIN LOGIN MODAL ===== -->
+<div class="modal-overlay" id="adminLoginModal">
+  <div class="modal-box">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px;">
+      <div>
+        <div style="font-size:2rem;margin-bottom:8px;">🔐</div>
+        <h2 class="modal-title gradient-text">Admin Login</h2>
+        <p style="color:#64748b;font-size:0.85rem;">Masukkan kedua key dengan benar.</p>
+      </div>
+      <button onclick="closeAdminLogin()" style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.2);border-radius:8px;padding:6px 10px;color:#f87171;cursor:pointer;font-size:0.8rem;" onmouseover="this.style.background='rgba(239,68,68,0.2)'" onmouseout="this.style.background='rgba(239,68,68,0.1)'">✕</button>
+    </div>
+    <div id="login-error" style="display:none;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);border-radius:10px;padding:12px 16px;margin-bottom:16px;color:#f87171;font-size:0.85rem;display:flex;align-items:center;gap:8px;">
+      <i data-lucide="alert-circle" style="width:16px;height:16px;flex-shrink:0;"></i>
+      <span id="login-error-msg"></span>
+    </div>
+    <label class="modal-label">Key 1</label>
+    <input type="password" id="login-key1" class="modal-input" placeholder="Masukkan key pertama..." onkeydown="if(event.key==='Enter')doLogin()" />
+    <label class="modal-label">Key 2</label>
+    <input type="password" id="login-key2" class="modal-input" placeholder="Masukkan key kedua..." onkeydown="if(event.key==='Enter')doLogin()" />
+    <button onclick="doLogin()" class="btn-primary ripple-container" style="width:100%;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:4px;">
+      <i data-lucide="log-in" style="width:16px;height:16px;"></i> Login
+    </button>
+  </div>
+</div>
+
+<!-- ===== EDIT MEMBER MODAL ===== -->
+<div class="modal-overlay" id="editMemberModal">
+  <div class="modal-box" style="max-width:520px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">
+      <h2 class="modal-title" style="font-size:1.3rem;">✏️ Edit Member</h2>
+      <button onclick="closeEditModal()" style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.2);border-radius:8px;padding:6px 10px;color:#f87171;cursor:pointer;" onmouseover="this.style.background='rgba(239,68,68,0.2)'" onmouseout="this.style.background='rgba(239,68,68,0.1)'">✕</button>
+    </div>
+    <input type="hidden" id="edit-member-id" />
+    <label class="modal-label">Nama Member</label>
+    <input type="text" id="edit-name" class="modal-input" placeholder="Nama..." />
+    <label class="modal-label">Role</label>
+    <select id="edit-role" class="modal-input">
+      <option value="member">Member</option>
+      <option value="owner">Owner</option>
+      <option value="co-owner">Co-Owner</option>
+      <option value="admin">Admin</option>
+      <option value="editor">Editor</option>
+      <option value="cameramen">Cameramen</option>
+    </select>
+    <label class="modal-label">Deskripsi</label>
+    <textarea id="edit-desc" class="modal-input" style="min-height:70px;resize:vertical;" placeholder="Deskripsi..."></textarea>
+    <label class="modal-label">PFP Baru (kosongkan jika tidak ganti)</label>
+    <div class="img-upload-area" onclick="document.getElementById('edit-pfp-input').click()" style="padding:12px;">
+      <div id="edit-pfp-preview" style="display:flex;align-items:center;gap:10px;color:#64748b;font-size:0.82rem;justify-content:center;">
+        <i data-lucide="image" style="width:20px;height:20px;opacity:0.5;"></i> Klik untuk ganti PFP
+      </div>
+    </div>
+    <input type="file" id="edit-pfp-input" accept="image/*" onchange="previewImage(this,'edit-pfp-preview','edit-pfp-data')" />
+    <input type="hidden" id="edit-pfp-data" />
+    <label class="modal-label">Background Baru (kosongkan jika tidak ganti)</label>
+    <div class="img-upload-area" onclick="document.getElementById('edit-bg-input').click()" style="padding:12px;">
+      <div id="edit-bg-preview" style="display:flex;align-items:center;gap:10px;color:#64748b;font-size:0.82rem;justify-content:center;">
+        <i data-lucide="image-plus" style="width:20px;height:20px;opacity:0.5;"></i> Klik untuk ganti Background
+      </div>
+    </div>
+    <input type="file" id="edit-bg-input" accept="image/*" onchange="previewImage(this,'edit-bg-preview','edit-bg-data')" />
+    <input type="hidden" id="edit-bg-data" />
+    <button onclick="saveEditMember()" class="btn-primary ripple-container" style="width:100%;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:12px;">
+      <i data-lucide="save" style="width:16px;height:16px;"></i> Simpan Perubahan
+    </button>
+  </div>
+</div>
+
+<!-- ===== NOTIFICATION TOAST ===== -->
+<div class="notification" id="toast">
+  <span id="toast-icon">✅</span>
+  <span id="toast-msg">Berhasil!</span>
+</div>
+
+<!-- ===== JAVASCRIPT ===== -->
+<script>
+// =============================================
+// INITIALIZE LUCIDE ICONS
+// =============================================
+lucide.createIcons();
+
+// =============================================
+// DEFAULT DATA
+// =============================================
+const DEFAULT_RULES = [
+  "Dilarang bahas konten 18+",
+  "Dilarang kacangin member",
+  "Dikacain? Tag admin langsung!",
+  "Boleh toxic asal ga berlebihan",
+  "Dilarang promosi gc lain",
+  "Video/foto/VN 1x lihat",
+  "Collab/bikin trend? Tag admin",
+  "Dilarang jokes berlebihan",
+  "Kalau mau out, izin dulu",
+  "Spam stiker? Langsung admin kick",
+  "GC sepi? Ramein bareng!",
+  "Dilarang keluar masuk GC",
+  "Jomok jauh deh!",
+  "Bebas tag SW asal izin",
+  "GC tutup jam 00.00 buka jam 05.00",
+  "Jangan bucin berlebihan, hargai yang jomblo",
+  "Wajib usia 9+",
+  "Langgar rules 3x langsung kick"
+];
+
+const DEFAULT_CLAN_INFO = `🔥 Sixyz Clan Gen 2 — squad solid yang aktif dan kreatif!
+💬 Kita open collab, bikin konten, dan seru-seruan bareng.
+🏆 Gen 2 lebih fresh, lebih gokil, dan makin solid dari sebelumnya.
+📲 Stay active, stay fun, dan jaga vibes clan tetap baik.
+⏰ GC aktif setiap hari jam 05.00–00.00 WIB.
+❤️ Saling support sesama member!`;
+
+const DEFAULT_ROLES = [
+  { title: "Owner", color: "#f59e0b", names: ["Zikk", "Nazar"] },
+  { title: "Co-Owner", color: "#8b5cf6", names: ["Ardi"] },
+  { title: "Admin", color: "#06b6d4", names: ["Maymay", "Ren"] },
+  { title: "Editor", color: "#22c55e", names: ["Zikk"] },
+  { title: "Cameramen", color: "#ec4899", names: ["Nazar", "Zikk"] }
+];
+
+const DEFAULT_MEMBERS = [
+  { id: 1, name: "Zikk", role: "owner", desc: "Owner sekaligus editor andalan clan. Kreator konten nomor satu!", pfp: "", bg: "" },
+  { id: 2, name: "Nazar", role: "owner", desc: "Owner + cameramen. Selalu siap rekam momen terbaik!", pfp: "", bg: "" },
+  { id: 3, name: "Ardi", role: "co-owner", desc: "Co-Owner yang selalu jaga keharmonisan clan.", pfp: "", bg: "" },
+  { id: 4, name: "Maymay", role: "admin", desc: "Admin gahar yang siap jaga ketertiban GC!", pfp: "", bg: "" },
+  { id: 5, name: "Ren", role: "admin", desc: "Admin asik yang suka bantu member.", pfp: "", bg: "" }
+];
+
+// =============================================
+// LOCALSTORAGE HELPERS
+// =============================================
+function getData(key, def) {
+  try {
+    const d = localStorage.getItem(key);
+    return d ? JSON.parse(d) : def;
+  } catch { return def; }
+}
+function setData(key, val) {
+  try { localStorage.setItem(key, JSON.stringify(val)); } catch(e) { console.warn('Storage full', e); }
+}
+
+// =============================================
+// ADMIN AUTH
+// =============================================
+const KEYS = { k1: "apanganteng", k2: "panjaganteng" };
+let isAdmin = false;
+
+function openAdminLogin() {
+  document.getElementById('adminLoginModal').classList.add('open');
+  document.getElementById('login-key1').value = '';
+  document.getElementById('login-key2').value = '';
+  hideLoginError();
+  setTimeout(() => document.getElementById('login-key1').focus(), 300);
+}
+function closeAdminLogin() {
+  document.getElementById('adminLoginModal').classList.remove('open');
+}
+function showLoginError(msg) {
+  const el = document.getElementById('login-error');
+  el.style.display = 'flex';
+  document.getElementById('login-error-msg').textContent = msg;
+  const box = document.querySelector('#adminLoginModal .modal-box');
+  box.classList.remove('error-shake');
+  void box.offsetWidth;
+  box.classList.add('error-shake');
+}
+function hideLoginError() {
+  document.getElementById('login-error').style.display = 'none';
+}
+function doLogin() {
+  const k1 = document.getElementById('login-key1').value.trim();
+  const k2 = document.getElementById('login-key2').value.trim();
+  if (!k1 || !k2) { showLoginError('Kedua key harus diisi!'); return; }
+  if (k1 !== KEYS.k1 || k2 !== KEYS.k2) { showLoginError('Key salah! Coba lagi.'); return; }
+  isAdmin = true;
+  closeAdminLogin();
+  document.getElementById('admin-locked').style.display = 'none';
+  document.getElementById('admin-panel').style.display = 'block';
+  renderAdminMembers();
+  loadClanInfoEditor();
+  loadRolesEditor();
+  showToast('Login berhasil! Selamat datang, Admin! 🎉', 'success');
+  document.querySelector('#admin-section').scrollIntoView({ behavior: 'smooth' });
+  lucide.createIcons();
+}
+function logoutAdmin() {
+  isAdmin = false;
+  document.getElementById('admin-locked').style.display = 'block';
+  document.getElementById('admin-panel').style.display = 'none';
+  showToast('Berhasil logout.', 'success');
+}
+
+// =============================================
+// ADMIN TABS
+// =============================================
+function switchAdminTab(tab) {
+  document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.admin-panel-section').forEach(s => s.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+  document.getElementById('tab-' + tab).classList.add('active');
+  if (tab === 'manage-members') renderAdminMembers();
+  if (tab === 'edit-clan') loadClanInfoEditor();
+  if (tab === 'edit-roles') loadRolesEditor();
+}
+
+// =============================================
+// PARTICLES
+// =============================================
+function createParticles() {
+  const c = document.getElementById('particles-container');
+  const colors = ['#a855f7','#06b6d4','#8b5cf6','#0891b2'];
+  for (let i = 0; i < 28; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    const size = Math.random() * 5 + 2;
+    p.style.cssText = `
+      width:${size}px; height:${size}px;
+      left:${Math.random()*100}%;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      animation-duration:${Math.random()*15+10}s;
+      animation-delay:${Math.random()*10}s;
+    `;
+    c.appendChild(p);
+  }
+}
+createParticles();
+
+// =============================================
+// NAVBAR SCROLL BEHAVIOR
+// =============================================
+const navbar = document.getElementById('navbar');
+window.addEventListener('scroll', () => {
+  navbar.classList.toggle('scrolled', window.scrollY > 50);
+  document.getElementById('scrollTopBtn').classList.toggle('visible', window.scrollY > 400);
+  updateNavLinks();
+});
+function updateNavLinks() {
+  const sections = ['beranda','member','clan','admin-section'];
+  const links = document.querySelectorAll('.nav-link');
+  let current = 'beranda';
+  sections.forEach(id => {
+    const el = document.getElementById(id);
+    if (el && window.scrollY >= el.offsetTop - 120) current = id;
+  });
+  links.forEach(l => {
+    const href = l.getAttribute('href')?.replace('#','');
+    l.classList.toggle('active', href === current || (href==='admin-section' && current==='admin-section'));
+  });
+}
+
+// =============================================
+// MOBILE MENU
+// =============================================
+let menuOpen = false;
+function toggleMobileMenu() {
+  menuOpen = !menuOpen;
+  document.getElementById('mobileMenu').classList.toggle('open', menuOpen);
+  const h1=document.getElementById('ham1'), h2=document.getElementById('ham2'), h3=document.getElementById('ham3');
+  if (menuOpen) {
+    h1.style.cssText = 'transform:rotate(45deg) translate(5px,5px);width:22px;height:2px;background:var(--neon-purple);display:block;transition:all 0.3s;border-radius:2px;';
+    h2.style.cssText = 'opacity:0;width:22px;height:2px;background:currentColor;display:block;transition:all 0.3s;border-radius:2px;';
+    h3.style.cssText = 'transform:rotate(-45deg) translate(5px,-5px);width:22px;height:2px;background:var(--neon-purple);display:block;transition:all 0.3s;border-radius:2px;';
+  } else {
+    h1.style.cssText = 'width:22px;height:2px;background:currentColor;display:block;transition:all 0.3s;border-radius:2px;';
+    h2.style.cssText = 'width:22px;height:2px;background:currentColor;display:block;transition:all 0.3s;border-radius:2px;';
+    h3.style.cssText = 'width:22px;height:2px;background:currentColor;display:block;transition:all 0.3s;border-radius:2px;';
+  }
+}
+
+// =============================================
+// RIPPLE EFFECT
+// =============================================
+document.addEventListener('click', function(e) {
+  const btn = e.target.closest('.ripple-container');
+  if (!btn) return;
+  const r = document.createElement('span');
+  r.className = 'ripple';
+  const rect = btn.getBoundingClientRect();
+  const size = Math.max(rect.width, rect.height);
+  r.style.cssText = `width:${size}px;height:${size}px;left:${e.clientX-rect.left-size/2}px;top:${e.clientY-rect.top-size/2}px;`;
+  btn.appendChild(r);
+  setTimeout(() => r.remove(), 700);
+});
+
+// =============================================
+// INTERSECTION OBSERVER (SCROLL ANIMATIONS)
+// =============================================
+const revealObs = new IntersectionObserver((entries) => {
+  entries.forEach((entry, i) => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      revealObs.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+function observeReveal() {
+  document.querySelectorAll('.reveal, .reveal-left, .reveal-scale').forEach(el => revealObs.observe(el));
+}
+
+// =============================================
+// RULES ANIMATION
+// =============================================
+const rulesObs = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const items = entry.target.querySelectorAll('.rule-item');
+      items.forEach((item, i) => {
+        setTimeout(() => item.classList.add('rule-visible'), i * 80);
+      });
+      rulesObs.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.05 });
+
+// =============================================
+// STAT COUNTER ANIMATION
+// =============================================
+function animateCounter(el, target, duration=1500) {
+  let start = 0, startTime = null;
+  function step(ts) {
+    if (!startTime) startTime = ts;
+    const prog = Math.min((ts - startTime) / duration, 1);
+    el.textContent = Math.floor(prog * target);
+    if (prog < 1) requestAnimationFrame(step);
+    else el.textContent = target;
+  }
+  requestAnimationFrame(step);
+}
+
+const statObs = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const members = getData('members', DEFAULT_MEMBERS);
+      animateCounter(document.getElementById('stat-members'), members.length);
+      statObs.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.5 });
+statObs.observe(document.getElementById('stat-members'));
+
+// =============================================
+// TYPING EFFECT HERO
+// =============================================
+const texts = [
+  "Clan solid dengan vibes yang keren dan member yang loyal! 🔥",
+  "Gabung bareng Gen 2 yang fresh, aktif, dan seru abis! ⚡",
+  "Collab, konten, dan keseruan tanpa batas! 🎮"
+];
+let tIdx = 0, cIdx = 0, isDeleting = false;
+const typingEl = document.getElementById('hero-typing-text');
+typingEl.classList.add('typing-cursor');
+
+function typeLoop() {
+  const current = texts[tIdx];
+  if (!isDeleting) {
+    typingEl.textContent = current.substring(0, cIdx + 1);
+    cIdx++;
+    if (cIdx === current.length) { isDeleting = true; setTimeout(typeLoop, 2500); return; }
+    setTimeout(typeLoop, 55);
+  } else {
+    typingEl.textContent = current.substring(0, cIdx - 1);
+    cIdx--;
+    if (cIdx === 0) { isDeleting = false; tIdx = (tIdx + 1) % texts.length; }
+    setTimeout(typeLoop, 28);
+  }
+}
+setTimeout(typeLoop, 1200);
+
+// =============================================
+// IMAGE PREVIEW
+// =============================================
+function previewImage(input, previewId, dataId) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    document.getElementById(dataId).value = e.target.result;
+    const preview = document.getElementById(previewId);
+    preview.innerHTML = `<img src="${e.target.result}" style="max-height:90px;border-radius:10px;object-fit:cover;max-width:100%;" />`;
+  };
+  reader.readAsDataURL(file);
+}
+
+// =============================================
+// TOAST NOTIFICATION
+// =============================================
+let toastTimer;
+function showToast(msg, type = 'success') {
+  const toast = document.getElementById('toast');
+  document.getElementById('toast-msg').textContent = msg;
+  document.getElementById('toast-icon').textContent = type === 'success' ? '✅' : '❌';
+  toast.className = `notification ${type}`;
+  setTimeout(() => toast.classList.add('show'), 10);
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toast.classList.remove('show'), 3500);
+}
+
+// =============================================
+// MEMBER RENDERING
+// =============================================
+const roleColors = {
+  owner: { bg: 'rgba(245,158,11,0.15)', border: 'rgba(245,158,11,0.4)', text: '#fbbf24' },
+  'co-owner': { bg: 'rgba(139,92,246,0.15)', border: 'rgba(139,92,246,0.4)', text: '#a78bfa' },
+  admin: { bg: 'rgba(6,182,212,0.15)', border: 'rgba(6,182,212,0.4)', text: '#67e8f9' },
+  editor: { bg: 'rgba(34,197,94,0.15)', border: 'rgba(34,197,94,0.4)', text: '#86efac' },
+  cameramen: { bg: 'rgba(236,72,153,0.15)', border: 'rgba(236,72,153,0.4)', text: '#f9a8d4' },
+  member: { bg: 'rgba(168,85,247,0.1)', border: 'rgba(168,85,247,0.25)', text: '#c4b5fd' }
+};
+
+function getInitials(name) {
+  return name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0,2);
+}
+
+function renderMembers() {
+  const members = getData('members', DEFAULT_MEMBERS);
+  const grid = document.getElementById('members-grid');
+  const empty = document.getElementById('members-empty');
+  grid.innerHTML = '';
+  if (!members.length) { empty.style.display = 'block'; return; }
+  empty.style.display = 'none';
+  document.getElementById('stat-members').textContent = members.length;
+  members.forEach((m, i) => {
+    const rc = roleColors[m.role] || roleColors.member;
+    const card = document.createElement('div');
+    card.className = 'member-card reveal';
+    card.style.transitionDelay = `${i * 0.07}s`;
+    card.innerHTML = `
+      <!-- BG -->
+      <div class="member-card-bg">
+        ${m.bg
+          ? `<img src="${m.bg}" alt="bg" />`
+          : `<div class="bg-placeholder"><span style="font-size:2.5rem;opacity:0.15;">⚔️</span></div>`
+        }
+        <div style="position:absolute;inset:0;background:linear-gradient(to bottom,transparent 40%,rgba(3,7,18,0.9) 100%);"></div>
+      </div>
+      <!-- PFP -->
+      <div class="member-pfp-wrap">
+        <div class="member-pfp-ring"></div>
+        <div class="member-pfp">
+          ${m.pfp
+            ? `<img src="${m.pfp}" alt="${m.name}" />`
+            : `<span>${getInitials(m.name)}</span>`
+          }
+        </div>
+      </div>
+      <!-- Info -->
+      <div class="member-info">
+        <div class="member-name">${m.name}</div>
+        <div class="member-role-badge" style="background:${rc.bg};border-color:${rc.border};color:${rc.text};">
+          ${m.role.toUpperCase()}
+        </div>
+        <p class="member-desc">${m.desc || 'Member aktif Sixyz Clan Gen 2.'}</p>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+  observeReveal();
+  lucide.createIcons();
+}
+
+// =============================================
+// RULES RENDERING
+// =============================================
+function renderRules() {
+  const rules = getData('rules', DEFAULT_RULES);
+  const container = document.getElementById('rules-container');
+  container.innerHTML = '';
+  rules.forEach((rule, i) => {
+    const item = document.createElement('div');
+    item.className = 'rule-item';
+    item.innerHTML = `
+      <div class="rule-number">${i + 1}</div>
+      <div class="rule-text">${rule}</div>
+    `;
+    container.appendChild(item);
+  });
+  rulesObs.observe(container);
+}
+
+// =============================================
+// CLAN INFO RENDERING
+// =============================================
+function renderClanInfo() {
+  const info = getData('clanInfo', DEFAULT_CLAN_INFO);
+  const display = document.getElementById('clan-info-display');
+  display.innerHTML = '';
+  info.split('\n').filter(l => l.trim()).forEach(line => {
+    const p = document.createElement('p');
+    p.textContent = line;
+    display.appendChild(p);
+  });
+}
+
+// =============================================
+// ROLES RENDERING
+// =============================================
+function renderRoles() {
+  const roles = getData('roles', DEFAULT_ROLES);
+  const container = document.getElementById('roles-container');
+  container.innerHTML = '';
+  const rolePalette = ['#f59e0b','#8b5cf6','#06b6d4','#22c55e','#ec4899','#f97316','#a855f7'];
+  roles.forEach((role, i) => {
+    const color = role.color || rolePalette[i % rolePalette.length];
+    const card = document.createElement('div');
+    card.className = 'role-card reveal';
+    card.style.transitionDelay = `${i * 0.1}s`;
+    card.innerHTML = `
+      <div class="role-title" style="color:${color};">${role.title}</div>
+      <div class="role-names">
+        ${role.names.map(n => `<span class="role-name-tag" style="background:rgba(${hexToRgb(color)},0.1);border-color:rgba(${hexToRgb(color)},0.3);color:${color};">${n}</span>`).join('')}
+      </div>
+    `;
+    container.appendChild(card);
+  });
+  observeReveal();
+}
+
+function hexToRgb(hex) {
+  const r = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return r ? `${parseInt(r[1],16)},${parseInt(r[2],16)},${parseInt(r[3],16)}` : '168,85,247';
+}
+
+// =============================================
+// ADMIN MEMBER LIST
+// =============================================
+function renderAdminMembers() {
+  const members = getData('members', DEFAULT_MEMBERS);
+  const list = document.getElementById('admin-members-list');
+  const empty = document.getElementById('admin-members-empty');
+  list.innerHTML = '';
+  if (!members.length) { empty.style.display = 'block'; return; }
+  empty.style.display = 'none';
+  members.forEach(m => {
+    const rc = roleColors[m.role] || roleColors.member;
+    const card = document.createElement('div');
+    card.className = 'admin-member-card';
+    card.innerHTML = `
+      <div style="width:48px;height:48px;border-radius:50%;overflow:hidden;flex-shrink:0;border:2px solid rgba(168,85,247,0.3);background:linear-gradient(135deg,#312e81,#0c4a6e);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1rem;color:white;">
+        ${m.pfp ? `<img src="${m.pfp}" style="width:100%;height:100%;object-fit:cover;" />` : getInitials(m.name)}
+      </div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-weight:700;font-size:0.95rem;color:#f1f5f9;">${m.name}</div>
+        <div style="font-size:0.75rem;color:${rc.text};font-weight:600;text-transform:uppercase;letter-spacing:0.05em;">${m.role}</div>
+        <div style="font-size:0.78rem;color:#475569;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:280px;">${m.desc || '-'}</div>
+      </div>
+      <div style="display:flex;gap:8px;flex-shrink:0;">
+        <button onclick="openEditModal(${m.id})" style="background:rgba(6,182,212,0.1);border:1px solid rgba(6,182,212,0.3);border-radius:8px;padding:7px 14px;color:#67e8f9;font-size:0.78rem;font-weight:700;cursor:pointer;transition:all 0.3s;display:flex;align-items:center;gap:5px;" onmouseover="this.style.background='rgba(6,182,212,0.2)'" onmouseout="this.style.background='rgba(6,182,212,0.1)'">
+          <i data-lucide="edit-2" style="width:13px;height:13px;"></i> Edit
+        </button>
+        <button onclick="deleteMember(${m.id})" style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);border-radius:8px;padding:7px 14px;color:#f87171;font-size:0.78rem;font-weight:700;cursor:pointer;transition:all 0.3s;display:flex;align-items:center;gap:5px;" onmouseover="this.style.background='rgba(239,68,68,0.2)'" onmouseout="this.style.background='rgba(239,68,68,0.1)'">
+          <i data-lucide="trash-2" style="width:13px;height:13px;"></i> Hapus
+        </button>
+      </div>
+    `;
+    list.appendChild(card);
+  });
+  lucide.createIcons();
+}
+
+// =============================================
+// ADD MEMBER
+// =============================================
+function addMember() {
+  const name = document.getElementById('add-name').value.trim();
+  const role = document.getElementById('add-role').value;
+  const desc = document.getElementById('add-desc').value.trim();
+  const pfp = document.getElementById('add-pfp-data').value;
+  const bg = document.getElementById('add-bg-data').value;
+  if (!name) { showToast('Nama tidak boleh kosong!', 'error'); return; }
+  const members = getData('members', DEFAULT_MEMBERS);
+  const newId = Date.now();
+  members.push({ id: newId, name, role, desc, pfp, bg });
+  setData('members', members);
+  renderMembers();
+  renderAdminMembers();
+  // Reset form
+  document.getElementById('add-name').value = '';
+  document.getElementById('add-desc').value = '';
+  document.getElementById('add-pfp-data').value = '';
+  document.getElementById('add-bg-data').value = '';
+  document.getElementById('add-pfp-preview').innerHTML = `<i data-lucide="image" style="width:32px;height:32px;opacity:0.5;"></i><span style="font-size:0.8rem;">Klik untuk upload PFP</span>`;
+  document.getElementById('add-pfp-preview').style.display = 'flex';
+  document.getElementById('add-pfp-preview').style.flexDirection = 'column';
+  document.getElementById('add-pfp-preview').style.alignItems = 'center';
+  document.getElementById('add-pfp-preview').style.gap = '8px';
+  document.getElementById('add-bg-preview').innerHTML = `<i data-lucide="image-plus" style="width:32px;height:32px;opacity:0.5;"></i><span style="font-size:0.8rem;">Klik untuk upload Background</span>`;
+  document.getElementById('add-bg-preview').style.display = 'flex';
+  document.getElementById('add-bg-preview').style.flexDirection = 'column';
+  document.getElementById('add-bg-preview').style.alignItems = 'center';
+  document.getElementById('add-bg-preview').style.gap = '8px';
+  lucide.createIcons();
+  showToast(`Member "${name}" berhasil ditambahkan! 🎉`, 'success');
+}
+
+// =============================================
+// DELETE MEMBER
+// =============================================
+function deleteMember(id) {
+  if (!confirm('Yakin hapus member ini?')) return;
+  let members = getData('members', DEFAULT_MEMBERS);
+  const m = members.find(x => x.id === id);
+  members = members.filter(x => x.id !== id);
+  setData('members', members);
+  renderMembers();
+  renderAdminMembers();
+  showToast(`Member "${m?.name}" dihapus.`, 'success');
+}
+
+// =============================================
+// EDIT MEMBER MODAL
+// =============================================
+function openEditModal(id) {
+  const members = getData('members', DEFAULT_MEMBERS);
+  const m = members.find(x => x.id === id);
+  if (!m) return;
+  document.getElementById('edit-member-id').value = id;
+  document.getElementById('edit-name').value = m.name;
+  document.getElementById('edit-role').value = m.role;
+  document.getElementById('edit-desc').value = m.desc || '';
+  document.getElementById('edit-pfp-data').value = '';
+  document.getElementById('edit-bg-data').value = '';
+  document.getElementById('edit-pfp-preview').innerHTML = `<i data-lucide="image" style="width:20px;height:20px;opacity:0.5;"></i> Klik untuk ganti PFP`;
+  document.getElementById('edit-bg-preview').innerHTML = `<i data-lucide="image-plus" style="width:20px;height:20px;opacity:0.5;"></i> Klik untuk ganti Background`;
+  document.getElementById('editMemberModal').classList.add('open');
+  lucide.createIcons();
+}
+function closeEditModal() {
+  document.getElementById('editMemberModal').classList.remove('open');
+}
+function saveEditMember() {
+  const id = parseInt(document.getElementById('edit-member-id').value);
+  const name = document.getElementById('edit-name').value.trim();
+  const role = document.getElementById('edit-role').value;
+  const desc = document.getElementById('edit-desc').value.trim();
+  const pfp = document.getElementById('edit-pfp-data').value;
+  const bg = document.getElementById('edit-bg-data').value;
+  if (!name) { showToast('Nama tidak boleh kosong!', 'error'); return; }
+  let members = getData('members', DEFAULT_MEMBERS);
+  members = members.map(m => {
+    if (m.id === id) {
+      return { ...m, name, role, desc, pfp: pfp || m.pfp, bg: bg || m.bg };
+    }
+    return m;
+  });
+  setData('members', members);
+  closeEditModal();
+  renderMembers();
+  renderAdminMembers();
+  showToast(`Member "${name}" berhasil diupdate! ✏️`, 'success');
+}
+
+// =============================================
+// CLAN INFO EDITOR
+// =============================================
+function loadClanInfoEditor() {
+  document.getElementById('clan-info-editor').value = getData('clanInfo', DEFAULT_CLAN_INFO);
+}
+function saveClanInfo() {
+  const val = document.getElementById('clan-info-editor').value.trim();
+  setData('clanInfo', val);
+  renderClanInfo();
+  showToast('Info clan berhasil disimpan! 💾', 'success');
+}
+
+// =============================================
+// ROLES EDITOR
+// =============================================
+function loadRolesEditor() {
+  const roles = getData('roles', DEFAULT_ROLES);
+  document.getElementById('roles-editor').value = roles.map(r => `${r.title}: ${r.names.join(', ')}`).join('\n');
+}
+function saveRoles() {
+  const lines = document.getElementById('roles-editor').value.trim().split('\n').filter(l => l.trim());
+  const rolePalette = ['#f59e0b','#8b5cf6','#06b6d4','#22c55e','#ec4899','#f97316','#a855f7'];
+  const roles = lines.map((line, i) => {
+    const [titlePart, namesPart] = line.split(':');
+    return {
+      title: (titlePart || '').trim(),
+      names: (namesPart || '').split(',').map(n => n.trim()).filter(Boolean),
+      color: rolePalette[i % rolePalette.length]
+    };
+  });
+  setData('roles', roles);
+  renderRoles();
+  showToast('Roles berhasil disimpan! 👑', 'success');
+}
+
+// =============================================
+// LAYOUT TOGGLE
+// =============================================
+function setLayout(layout) {
+  const grid = document.getElementById('members-grid');
+  document.getElementById('btn-desktop').classList.remove('active-layout');
+  document.getElementById('btn-mobile').classList.remove('active-layout');
+  if (layout === 'mobile') {
+    grid.className = 'mobile-layout';
+    grid.style.display = 'grid';
+    grid.style.gridTemplateColumns = '1fr';
+    grid.style.gap = '20px';
+    document.getElementById('btn-mobile').classList.add('active-layout');
+  } else {
+    grid.className = 'desktop-layout';
+    grid.style.display = 'grid';
+    grid.style.gridTemplateColumns = 'repeat(auto-fill,minmax(220px,1fr))';
+    grid.style.gap = '24px';
+    document.getElementById('btn-desktop').classList.add('active-layout');
+  }
+}
+
+// =============================================
+// GC STATUS
+// =============================================
+function updateGCStatus() {
+  const now = new Date();
+  const h = now.getHours();
+  const active = h >= 5 && h < 24;
+  const dot = document.getElementById('gc-status-dot');
+  const txt = document.getElementById('gc-status-text');
+  if (dot && txt) {
+    dot.style.background = active ? '#22c55e' : '#ef4444';
+    txt.style.color = active ? '#22c55e' : '#ef4444';
+    txt.textContent = active ? 'Active' : 'Closed';
+  }
+}
+updateGCStatus();
+setInterval(updateGCStatus, 60000);
+
+// =============================================
+// MODAL CLOSE ON OVERLAY CLICK
+// =============================================
+document.getElementById('adminLoginModal').addEventListener('click', function(e) {
+  if (e.target === this) closeAdminLogin();
+});
+document.getElementById('editMemberModal').addEventListener('click', function(e) {
+  if (e.target === this) closeEditModal();
+});
+
+// =============================================
+// NEON PROGRESS BARS (for stats visual)
+// =============================================
+const progressObs = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.querySelectorAll('.neon-progress-bar').forEach(bar => {
+        const w = bar.getAttribute('data-width') || '80';
+        setTimeout(() => bar.style.width = w + '%', 200);
+      });
+      progressObs.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.3 });
+
+// =============================================
+// INIT
+// =============================================
+function init() {
+  renderMembers();
+  renderRules();
+  renderClanInfo();
+  renderRoles();
+  observeReveal();
+  lucide.createIcons();
+}
+
+// Run init
+init();
+
+// =============================================
+// ESC KEY TO CLOSE MODALS
+// =============================================
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    closeAdminLogin();
+    closeEditModal();
+    if (menuOpen) toggleMobileMenu();
+  }
+});
+
+// =============================================
+// SMOOTH SCROLL FOR ANCHOR LINKS
+// =============================================
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', function(e) {
+    e.preventDefault();
+    const target = document.querySelector(this.getAttribute('href'));
+    if (target) target.scrollIntoView({ behavior: 'smooth' });
+  });
+});
+</script>
+
+</body>
+</html>
